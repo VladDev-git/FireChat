@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "539011633542",
+    "firebase_url": "https://mychat-a7522-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "mychat-a7522",
+    "storage_bucket": "mychat-a7522.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:539011633542:android:ae2b8077f925d14b17dc07",
+        "android_client_info": {
+          "package_name": "com.example.mychat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCkvPTuPuwluCWcs4ObVJU5nNkaH885jQ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
