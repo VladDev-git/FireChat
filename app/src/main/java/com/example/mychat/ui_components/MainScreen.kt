@@ -5,9 +5,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -15,19 +17,31 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 
+@OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
-fun MainScreen(onSendClick : (String) -> Unit) {
-    val message = mutableStateOf("")
+fun MainScreen(chatText: String, onSendClick : (String) -> Unit) {
+    val message = remember { mutableStateOf("") }
 
-    Scaffold(modifier = Modifier.fillMaxSize()) {
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "My Chat"
+                    )
+                }
+            )
+        }
+    ) {
         ConstraintLayout(
             modifier = Modifier.fillMaxSize()
         ) {
             val (text, textField, button) = createRefs()
 
             Text(
-                text = "Hello, World!",
+                text = chatText,
                 modifier = Modifier
                     .constrainAs(text) {
                         top.linkTo(parent.top)
@@ -59,6 +73,7 @@ fun MainScreen(onSendClick : (String) -> Unit) {
             Button(
                 onClick = {
                     onSendClick(message.value)
+                    message.value = ""
                 },
                 modifier = Modifier
                     .constrainAs(button) {
@@ -76,3 +91,9 @@ fun MainScreen(onSendClick : (String) -> Unit) {
         }
     }
 }
+
+
+
+
+
+
