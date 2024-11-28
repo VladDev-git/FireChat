@@ -1,13 +1,13 @@
 package com.example.mychat
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.navigation.compose.rememberNavController
 import com.example.mychat.ui.theme.MyChatTheme
 import com.example.mychat.ui_components.MainScreen
 import com.google.firebase.auth.FirebaseAuth
@@ -31,17 +31,23 @@ class MainActivity : ComponentActivity() {
         val myRef = database.getReference("message")
 
         setContent {
-            val navController = rememberNavController()
+            //val navController = rememberNavController()
             val chatText = remember { mutableStateOf("") }
+            val displayName = remember {
+                mutableStateOf(auth.currentUser?.displayName ?: "MyChat")
+            }
 
             onChangeListener(myRef) { message ->
                 chatText.value += "\n$message"
             }
 
             MyChatTheme {
-                MainScreen(chatText.value, auth) { message ->
+                MainScreen(chatText.value, auth, displayName.value, { message ->
                     myRef.setValue(message)
-                }
+                },{
+                    logout()
+                })
+
 //                NavHost(navController = navController, startDestination = Routes.AUTHENTICATION_SCREEN) {
 //
 //                    composable(Routes.AUTHENTICATION_SCREEN) {
@@ -72,6 +78,12 @@ class MainActivity : ComponentActivity() {
         })
     }
 
+    private fun logout() {
+        auth.signOut()
+        startActivity(Intent(this, AuthenticationActivity::class.java))
+        finish()
+        return
+    }
 }
 
 

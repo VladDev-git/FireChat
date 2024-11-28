@@ -11,3 +11,4 @@ val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
 val WhatsAppGreen = Color(0xFF21BB5B)
+val MainLightGray = Color(0xFFE5E5E5)
