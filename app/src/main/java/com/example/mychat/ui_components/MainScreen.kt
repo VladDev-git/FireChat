@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExitToApp
@@ -31,6 +32,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.AsyncImage
+import com.example.mychat.User
 import com.example.mychat.ui.theme.MainLightGray
 import com.example.mychat.ui.theme.Purple80
 import com.example.mychat.ui.theme.PurpleGrey80
@@ -40,9 +42,8 @@ import com.google.firebase.auth.FirebaseAuth
 @OptIn(ExperimentalMaterial3Api::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "UnrememberedMutableState")
 @Composable
-fun MainScreen(chatText: String, auth: FirebaseAuth, displayName: String,
+fun MainScreen(chatList: ArrayList<User>, auth: FirebaseAuth, displayName: String,
                onSendClick : (String) -> Unit, onLogoutClick: () -> Unit) {
-    val coroutineScope = rememberCoroutineScope()
     val message = remember { mutableStateOf("") }
 
     Scaffold(
@@ -89,19 +90,21 @@ fun MainScreen(chatText: String, auth: FirebaseAuth, displayName: String,
                 .padding(paddingValues)
                 .background(MainLightGray)
         ) {
-            val (text, textField, button) = createRefs()
+            val (lazyColumn, textField, button) = createRefs()
 
-            Text(
-                text = chatText,
+            LazyColumn(
                 modifier = Modifier
-                    .constrainAs(text) {
+                    .constrainAs(lazyColumn) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
                         end.linkTo(parent.end)
                     }
-                    .padding(20.dp, top = 7.dp)
                     .fillMaxSize()
-            )
+            ) {
+                items(chatList.size) { index ->
+                    UserListItem(chatList[index])
+                }
+            }
             TextField(
                 value = message.value,
                 onValueChange = {

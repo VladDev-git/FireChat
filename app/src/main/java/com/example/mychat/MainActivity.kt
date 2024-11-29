@@ -22,7 +22,7 @@ import com.google.firebase.ktx.Firebase
 class MainActivity : ComponentActivity() {
     lateinit var auth: FirebaseAuth
 
-    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "MutableCollectionMutableState")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -31,49 +31,40 @@ class MainActivity : ComponentActivity() {
         val myRef = database.getReference("message")
 
         setContent {
-            //val navController = rememberNavController()
-            val chatText = remember { mutableStateOf("") }
+            val chatList = remember { mutableStateOf(ArrayList<User>()) }
             val displayName = remember {
                 mutableStateOf(auth.currentUser?.displayName ?: "MyChat")
             }
 
-            onChangeListener(myRef) { message ->
-                chatText.value += "\n$message"
+            onChangeListener(myRef) { list ->
+                chatList.value = list
             }
 
             MyChatTheme {
-                MainScreen(chatText.value, auth, displayName.value, { message ->
-                    myRef.setValue(message)
+                MainScreen(chatList.value, auth, displayName.value, { message ->
+                    myRef.child(myRef.push().key ?: "message")
+                        .setValue(User(auth.currentUser?.displayName, message))
                 },{
                     logout()
                 })
-
-//                NavHost(navController = navController, startDestination = Routes.AUTHENTICATION_SCREEN) {
-//
-//                    composable(Routes.AUTHENTICATION_SCREEN) {
-//                        AuthenticationScreen() {
-//                            //navController.navigate(Routes.MAIN_SCREEN)
-//                        }
-//                    }
-//                    composable(Routes.MAIN_SCREEN) {
-//                        MainScreen(chatText.value) { message ->
-//                            myRef.setValue(message)
-//                        }
-//                    }
-//                }
             }
         }
     }
 
-    private fun onChangeListener(dRef: DatabaseReference, onNewMessage: (String) -> Unit) {
+    private fun onChangeListener(dRef: DatabaseReference, onUpdateList: (ArrayList<User>) -> Unit) {
         dRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val newMessage = snapshot.getValue(String::class.java)
-                newMessage?.let { onNewMessage(it) }
+                val list = ArrayList<User>()
+                for (s in snapshot.children) {
+                    val user = s.getValue(User::class.java)
+                    if (user != null) {
+                        list.add(user)
+                    }
+                }
+                onUpdateList(list)
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
             }
         })
     }
